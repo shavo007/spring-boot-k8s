@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-microservice
+  labels:
+    app: demo
+spec:
+  ports:
+    - port: 8081
+  selector:
+    app: demo
+    tier: microservice
+  type: LoadBalancer
+---
+ 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: demo-microservice
+  creationTimestamp: null
+  labels:
+     app: demo
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: demo
+        tier: microservice
+        env: dev
+    spec:
+      containers:
+        - name: demo
+          image: demo
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 8081
+          env:
+            - name: SERVER_PORT
+              value: "8081" 
+            - name: MANAGEMENT_SECURITY_ENABLED
+              value: "false" 
+          livenessProbe:
+                   httpGet:
+                     path: /health
+                     port: 8081
+                     httpHeaders:
+                       - name: X-Custom-Header
+                         value: Awesome
+                   initialDelaySeconds: 30
+                   periodSeconds: 3      
