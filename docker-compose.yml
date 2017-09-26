@@ -1,0 +1,17 @@
+version: '3'
+services:
+  microservice:
+    build: .
+    image: microservice:latest
+    container_name: microservice
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      MANAGEMENT_SECURITY_ENABLED: 'false'
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    restart: unless-stopped
+    ports:
+      - "80:8080"
